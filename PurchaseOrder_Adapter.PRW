@@ -109,13 +109,13 @@ Local aFields := {}
     Aadd(aFields, { "purchaseordernumber", "C7_NUM"    , .T., .T., {"C7_NUM"    , FwGetSX3Cache("C7_NUM", "X3_TIPO")    , FwGetSX3Cache("C7_NUM", "X3_TAMANHO")    , FwGetSX3Cache("C7_NUM", "X3_DECIMAL")    } } )
     Aadd(aFields, { "suppliercode"       , "C7_FORNECE", .T., .T., {"C7_FORNECE", FwGetSX3Cache("C7_FORNECE", "X3_TIPO"), FwGetSX3Cache("C7_FORNECE", "X3_TAMANHO"), FwGetSX3Cache("C7_FORNECE", "X3_DECIMAL")} } )
     Aadd(aFields, { "supplierunit"       , "C7_LOJA"   , .T., .T., {"C7_LOJA"   , FwGetSX3Cache("C7_LOJA", "X3_TIPO")   , FwGetSX3Cache("C7_LOJA", "X3_TAMANHO")   , FwGetSX3Cache("C7_LOJA", "X3_DECIMAL")   } } )
-    Aadd(aFields, { "deliverydate"       , "C7_DATPRF" , .T., .T., {"C7_DATPRF" , "C"                                   , FwGetSX3Cache("C7_DATPRF", "X3_TAMANHO") , FwGetSX3Cache("C7_DATPRF", "X3_DECIMAL") } } )
     Aadd(aFields, { "issuedate"          , "C7_EMISSAO", .T., .T., {"C7_EMISSAO", "C"                                   , FwGetSX3Cache("C7_EMISSAO", "X3_TAMANHO"), FwGetSX3Cache("C7_EMISSAO", "X3_DECIMAL")} } )
-    Aadd(aFields, { "purchaserequisno"   , "C7_NUMSC"  , .T., .T., {"C7_NUMSC"  , FwGetSX3Cache("C7_NUMSC", "X3_TIPO")  , FwGetSX3Cache("C7_NUMSC", "X3_TAMANHO")  , FwGetSX3Cache("C7_NUMSC", "X3_DECIMAL")  } } )
     
 	Aadd(aFields, { "contact"   		 , "C7_CONTATO", .T., .T., {"C7_CONTATO", FwGetSX3Cache("C7_CONTATO", "X3_TIPO"), FwGetSX3Cache("C7_CONTATO", "X3_TAMANHO"), FwGetSX3Cache("C7_CONTATO", "X3_DECIMAL")} } )
     Aadd(aFields, { "paymentterm"   	 , "C7_COND"   , .T., .T., {"C7_COND"   , FwGetSX3Cache("C7_COND", "X3_TIPO")   , FwGetSX3Cache("C7_COND", "X3_TAMANHO")   , FwGetSX3Cache("C7_COND", "X3_DECIMAL")   } } )
     Aadd(aFields, { "branchdelivery"     , "C7_FILENT" , .T., .T., {"C7_FILENT" , FwGetSX3Cache("C7_FILENT", "X3_TIPO") , FwGetSX3Cache("C7_FILENT", "X3_TAMANHO") , FwGetSX3Cache("C7_FILENT", "X3_DECIMAL") } } )
+    Aadd(aFields, { "currency"           , "C7_MOEDA"  , .T., .T., {"C7_MOEDA"  , FwGetSX3Cache("C7_MOEDA", "X3_TIPO")  , FwGetSX3Cache("C7_MOEDA", "X3_TAMANHO")  , FwGetSX3Cache("C7_MOEDA", "X3_DECIMAL")  } } )
+    Aadd(aFields, { "currencyrate"       , "C7_TXMOEDA", .T., .T., {"C7_TXMOEDA", FwGetSX3Cache("C7_TXMOEDA", "X3_TIPO"), FwGetSX3Cache("C7_TXMOEDA", "X3_TAMANHO"), FwGetSX3Cache("C7_TXMOEDA", "X3_DECIMAL")} } )
     
 	// Aadd(aFields, { "productcode"        , "C7_PRODUTO", .T., .T., {"C7_PRODUTO", FwGetSX3Cache("C7_PRODUTO", "X3_TIPO"), FwGetSX3Cache("C7_PRODUTO", "X3_TAMANHO"), FwGetSX3Cache("C7_PRODUTO", "X3_DECIMAL")} } )
     // Aadd(aFields, { "quantity"           , "C7_QUANT"  , .T., .T., {"C7_QUANT"  , FwGetSX3Cache("C7_QUANT", "X3_TIPO")  , FwGetSX3Cache("C7_QUANT", "X3_TAMANHO")  , FwGetSX3Cache("C7_QUANT", "X3_DECIMAL")  } } )
@@ -125,8 +125,6 @@ Local aFields := {}
     // Aadd(aFields, { "qtyalreadydelivered", "C7_QUJE"   , .T., .T., {"C7_QUJE"   , FwGetSX3Cache("C7_QUJE", "X3_TIPO")   , FwGetSX3Cache("C7_QUJE", "X3_TAMANHO")   , FwGetSX3Cache("C7_QUJE", "X3_DECIMAL")   } } )
     // Aadd(aFields, { "poelimresidue"      , "C7_RESIDUO", .T., .T., {"C7_RESIDUO", FwGetSX3Cache("C7_RESIDUO", "X3_TIPO"), FwGetSX3Cache("C7_RESIDUO", "X3_TAMANHO"), FwGetSX3Cache("C7_RESIDUO", "X3_DECIMAL")} } )
     // Aadd(aFields, { "productdescription" , "C7_DESCRI" , .T., .T., {"C7_DESCRI" , FwGetSX3Cache("C7_DESCRI", "X3_TIPO") , FwGetSX3Cache("C7_DESCRI", "X3_TAMANHO") , FwGetSX3Cache("C7_DESCRI", "X3_DECIMAL") } } )
-    // Aadd(aFields, { "currencyrate"       , "C7_TXMOEDA", .T., .T., {"C7_TXMOEDA", FwGetSX3Cache("C7_TXMOEDA", "X3_TIPO"), FwGetSX3Cache("C7_TXMOEDA", "X3_TAMANHO"), FwGetSX3Cache("C7_TXMOEDA", "X3_DECIMAL")} } )
-    // Aadd(aFields, { "currency"           , "C7_MOEDA"  , .T., .T., {"C7_MOEDA"  , FwGetSX3Cache("C7_MOEDA", "X3_TIPO")  , FwGetSX3Cache("C7_MOEDA", "X3_TAMANHO")  , FwGetSX3Cache("C7_MOEDA", "X3_DECIMAL")  } } )
     // Aadd(aFields, { "ipitaxrate"         , "C7_IPI"    , .T., .T., {"C7_IPI"    , FwGetSX3Cache("C7_IPI", "X3_TIPO")    , FwGetSX3Cache("C7_IPI", "X3_TAMANHO")    , FwGetSX3Cache("C7_IPI", "X3_DECIMAL")    } } )
 
 	Aadd(aFields, { 'purchaseorderitems' , 'C7_NUM'    , .T., .T.,  {'C7_NUM'    , FwGetSx3Cache("C7_NUM","X3_TIPO")    ,  FwGetSx3Cache("C7_NUM","X3_TAMANHO"), 0 }     } )
@@ -156,10 +154,15 @@ Local aFields := {}
     Aadd(aFields, { "qtyalreadydelivered", "C7_QUJE"   , .T., .T., {"C7_QUJE"   , FwGetSX3Cache("C7_QUJE", "X3_TIPO")   , FwGetSX3Cache("C7_QUJE", "X3_TAMANHO")   , FwGetSX3Cache("C7_QUJE", "X3_DECIMAL")   } } )
     Aadd(aFields, { "poelimresidue"      , "C7_RESIDUO", .T., .T., {"C7_RESIDUO", FwGetSX3Cache("C7_RESIDUO", "X3_TIPO"), FwGetSX3Cache("C7_RESIDUO", "X3_TAMANHO"), FwGetSX3Cache("C7_RESIDUO", "X3_DECIMAL")} } )
     Aadd(aFields, { "productdescription" , "C7_DESCRI" , .T., .T., {"C7_DESCRI" , FwGetSX3Cache("C7_DESCRI", "X3_TIPO") , FwGetSX3Cache("C7_DESCRI", "X3_TAMANHO") , FwGetSX3Cache("C7_DESCRI", "X3_DECIMAL") } } )
-    Aadd(aFields, { "currencyrate"       , "C7_TXMOEDA", .T., .T., {"C7_TXMOEDA", FwGetSX3Cache("C7_TXMOEDA", "X3_TIPO"), FwGetSX3Cache("C7_TXMOEDA", "X3_TAMANHO"), FwGetSX3Cache("C7_TXMOEDA", "X3_DECIMAL")} } )
-    Aadd(aFields, { "currency"           , "C7_MOEDA"  , .T., .T., {"C7_MOEDA"  , FwGetSX3Cache("C7_MOEDA", "X3_TIPO")  , FwGetSX3Cache("C7_MOEDA", "X3_TAMANHO")  , FwGetSX3Cache("C7_MOEDA", "X3_DECIMAL")  } } )
     Aadd(aFields, { "ipitaxrate"         , "C7_IPI"    , .T., .T., {"C7_IPI"    , FwGetSX3Cache("C7_IPI", "X3_TIPO")    , FwGetSX3Cache("C7_IPI", "X3_TAMANHO")    , FwGetSX3Cache("C7_IPI", "X3_DECIMAL")    } } )
+	Aadd(aFields, { "deliverydate"       , "C7_DATPRF" , .T., .T., {"C7_DATPRF" , "C"                                   , FwGetSX3Cache("C7_DATPRF", "X3_TAMANHO") , FwGetSX3Cache("C7_DATPRF", "X3_DECIMAL") } } )
+	Aadd(aFields, { "purchaserequestid"  , "C7_NUMSC"  , .T., .T., {"C7_NUMSC"  , FwGetSX3Cache("C7_NUMSC", "X3_TIPO")  , FwGetSX3Cache("C7_NUMSC", "X3_TAMANHO")  , FwGetSX3Cache("C7_NUMSC", "X3_DECIMAL")  } } )
+	Aadd(aFields, { "purchaserequestitem", "C7_ITEMSC" , .T., .T., {"C7_ITEMSC" , FwGetSX3Cache("C7_ITEMSC", "X3_TIPO") , FwGetSX3Cache("C7_ITEMSC", "X3_TAMANHO") , FwGetSX3Cache("C7_ITEMSC", "X3_DECIMAL") } } )
 
+	If SC7->(FieldPos("C7_XIDME")) > 0
+		Aadd(aFields, { "purchaserorderidme"   , "C7_XIDME" , .T., .T., {"C7_XIDME" , FwGetSX3Cache("C7_XIDME", "X3_TIPO") , FwGetSX3Cache("C7_XIDME", "X3_TAMANHO") , FwGetSX3Cache("C7_XIDME", "X3_DECIMAL") } } )
+	EndIf
+    
 Return aFields
 
 

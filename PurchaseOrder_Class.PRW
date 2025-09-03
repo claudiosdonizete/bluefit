@@ -307,12 +307,17 @@ Method postPurchaseOrder(nOperation) Class PedidosDeCompra
                                 // Se conseguir obter o valor do json
                                 If aDocItems[nI]:GetJsonValue(lower(cAtributo), @xValue ) 
 									If Left(cCampo,3)=="C7_"
-										// Faz as conversões ou completa com espaços
-										If FwGetSx3Cache(cCampo,"X3_TIPO") == "D"
-											xValue := STOD(xValue)
-										ElseIf FwGetSx3Cache(cCampo,"X3_TIPO") == "C" 
-											xValue := PAD(xValue,FwGetSx3Cache(cCampo,"X3_TAMANHO"))
-										Endif
+                                        // Obtem o número da solciitação através do RequestId
+										If lower(cAtributo) == "purchaserequestid"
+                                            xValue := getRequestById(xValue)
+                                        Else
+                                            // Faz as conversões ou completa com espaços
+                                            If FwGetSx3Cache(cCampo,"X3_TIPO") == "D"
+                                                xValue := STOD(xValue)
+                                            ElseIf FwGetSx3Cache(cCampo,"X3_TIPO") == "C" 
+                                                xValue := PAD(xValue,FwGetSx3Cache(cCampo,"X3_TAMANHO"))
+                                            Endif
+                                        EndIf
 
 										If .t. // PreValid(lower(cAtributo),xValue,oResponse,cAtributo,nI)
 											aAdd(aItem, {cCampo, xValue, Nil})
@@ -598,3 +603,24 @@ VarInfo("aRet", aRet)
 Conout("---------------------------------------------------------")
 
 Return aRet
+
+Static Function getRequestById(requestId)
+	Local cNum := cvaltochar(requestId)
+	Local cTemp := getNextAlias()
+
+        beginSql alias cTemp
+            select SC1.C1_NUM AS IDREQ
+            from %table:SC1% SC1
+            where C1_FILIAL = %xFilial:SC1%
+            and C1_XIDME = %exp:cNum%
+            and SC1.%notdel%
+        endSql
+
+        If !(cTemp)->(eof())
+			cNum := (cTemp)->IDREQ
+		Else
+			cNum := ""
+        EndIf
+        (cTemp)->( dbCloseArea() )
+
+Return(cNum)
