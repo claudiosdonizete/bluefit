@@ -117,6 +117,10 @@ Local aFields := {}
     Aadd(aFields, { "currency"           , "C7_MOEDA"  , .T., .T., {"C7_MOEDA"  , FwGetSX3Cache("C7_MOEDA", "X3_TIPO")  , FwGetSX3Cache("C7_MOEDA", "X3_TAMANHO")  , FwGetSX3Cache("C7_MOEDA", "X3_DECIMAL")  } } )
     Aadd(aFields, { "currencyrate"       , "C7_TXMOEDA", .T., .T., {"C7_TXMOEDA", FwGetSX3Cache("C7_TXMOEDA", "X3_TIPO"), FwGetSX3Cache("C7_TXMOEDA", "X3_TAMANHO"), FwGetSX3Cache("C7_TXMOEDA", "X3_DECIMAL")} } )
     
+    If SC7->(FieldPos("C7_XIDME")) > 0
+		Aadd(aFields, { "purchaserorderidme"   , "C7_XIDME" , .T., .T., {"C7_XIDME" , FwGetSX3Cache("C7_XIDME", "X3_TIPO") , FwGetSX3Cache("C7_XIDME", "X3_TAMANHO") , FwGetSX3Cache("C7_XIDME", "X3_DECIMAL") } } )
+	EndIf
+
 	// Aadd(aFields, { "productcode"        , "C7_PRODUTO", .T., .T., {"C7_PRODUTO", FwGetSX3Cache("C7_PRODUTO", "X3_TIPO"), FwGetSX3Cache("C7_PRODUTO", "X3_TAMANHO"), FwGetSX3Cache("C7_PRODUTO", "X3_DECIMAL")} } )
     // Aadd(aFields, { "quantity"           , "C7_QUANT"  , .T., .T., {"C7_QUANT"  , FwGetSX3Cache("C7_QUANT", "X3_TIPO")  , FwGetSX3Cache("C7_QUANT", "X3_TAMANHO")  , FwGetSX3Cache("C7_QUANT", "X3_DECIMAL")  } } )
     // Aadd(aFields, { "measurementunit"    , "C7_UM"     , .T., .T., {"C7_UM"     , FwGetSX3Cache("C7_UM", "X3_TIPO")     , FwGetSX3Cache("C7_UM", "X3_TAMANHO")     , FwGetSX3Cache("C7_UM", "X3_DECIMAL")     } } )
@@ -159,10 +163,6 @@ Local aFields := {}
 	Aadd(aFields, { "purchaserequestid"  , "C7_NUMSC"  , .T., .T., {"C7_NUMSC"  , FwGetSX3Cache("C7_NUMSC", "X3_TIPO")  , FwGetSX3Cache("C7_NUMSC", "X3_TAMANHO")  , FwGetSX3Cache("C7_NUMSC", "X3_DECIMAL")  } } )
 	Aadd(aFields, { "purchaserequestitem", "C7_ITEMSC" , .T., .T., {"C7_ITEMSC" , FwGetSX3Cache("C7_ITEMSC", "X3_TIPO") , FwGetSX3Cache("C7_ITEMSC", "X3_TAMANHO") , FwGetSX3Cache("C7_ITEMSC", "X3_DECIMAL") } } )
 
-	If SC7->(FieldPos("C7_XIDME")) > 0
-		Aadd(aFields, { "purchaserorderidme"   , "C7_XIDME" , .T., .T., {"C7_XIDME" , FwGetSX3Cache("C7_XIDME", "X3_TIPO") , FwGetSX3Cache("C7_XIDME", "X3_TAMANHO") , FwGetSX3Cache("C7_XIDME", "X3_DECIMAL") } } )
-	EndIf
-    
 Return aFields
 
 

@@ -178,6 +178,7 @@ Method postPurchaseOrder(nOperation) Class PedidosDeCompra
     Local cAtributo
     Local cBranchId     := ""
     Local cDocumentId   := ""
+    Local nPosXIdMe
 
     Private lMSErroAuto := .F.
     Private lMSHelpAuto := .T.
@@ -442,6 +443,14 @@ Method postPurchaseOrder(nOperation) Class PedidosDeCompra
                     Conout("---------------------------------------------------------")
                     VarInfo("EXECAUTO_SUCESSO", "")
                     Conout("---------------------------------------------------------") 
+                    If SC7->(FieldPos("C7_XIDME")) > 0 
+                        nPosXIdMe := Ascan(aDados, {|e| Upper(e[FIELD_NAME]) == "C7_XIDME"})
+                        If nPosXIdMe > 0
+                            RecLock("SC7", .F.)
+                                SC7->C7_XIDME := aDados[nPosXIdMe,FIELD_CONTENT]
+                            SC7->(MsUnLock())
+                        EndIf
+                    EndIf
 
                     If (nOperation==OPERATION_INSERT)
                         cFilterString := 'branchid='+cBranchId+'&purchaseordernumber='+Alltrim(cDocumentId)
