@@ -105,6 +105,23 @@ WSMETHOD POST WSSERVICE MercadoEletronico
 		For i := 1 to Len(oItems)
 			If (isValid(oItems[i], @cLogSuccess, @cLogError))
 				setItems(oItems[i], @aItems)
+			Else
+				// Se algum item for inválido, aborta o processo
+				cLogError += "Error: Item "+Alltrim(cvaltochar(oItems[i]['item']))+" inválido. Processo abortado."
+				oResponse['code'] := 1
+				oResponse['message'] := "Error: Failure to save request order in Protheus!"
+				oResponse['status'] := 500
+				oResponse['detailedMessage'] := cLogError
+				_lOk := .F.
+
+				SetRestFault( oResponse['code'],;
+							oResponse['message'],;
+							.T.,;
+							oResponse['status'],;
+							oResponse['detailedMessage'])
+
+				// SetRestFault(400,"Error: " + oResponse['detailedMessage'])
+				Return(_lOk)
 			EndIf
 		Next i
 
@@ -112,7 +129,7 @@ WSMETHOD POST WSSERVICE MercadoEletronico
 
 		If(aReturn[1])
 			ConfirmSX8()
-			cLogSuccess += aReturn[2]+chr(13)+chr(10)
+			cLogSuccess += aReturn[2]
 			oResponse['code'] := 200
 			oResponse['message'] := "Request order saved successfully in Protheus!"
 			oResponse['status'] := 200
@@ -121,7 +138,7 @@ WSMETHOD POST WSSERVICE MercadoEletronico
 			::SetResponse( oResponse )
 		Else
 			RollbackSX8()
-			cLogError += aReturn[2]+chr(13)+chr(10)
+			cLogError += aReturn[2]
 			oResponse['code'] := 1
 			oResponse['message'] := "Error: Failure to save request order in Protheus!"
 			oResponse['status'] := 500
@@ -147,7 +164,6 @@ WSMETHOD POST WSSERVICE MercadoEletronico
 	aItems := Nil
 	aSize(aHeader,0)
 	aHeader := Nil
-	
 
 Return(_lOk)
 
@@ -193,6 +209,24 @@ WSMETHOD PUT WSRECEIVE Null WSSERVICE MercadoEletronico
 			For i := 1 to Len(oItems)
 				If (isValid(oItems[i], @cLogSuccess, @cLogError))
 					setItems(oItems[i], @aItems)
+				Else
+					// Se algum item for inválido, aborta o processo
+					// Se algum item for inválido, aborta o processo
+					cLogError += "Error: Item "+Alltrim(cvaltochar(oItems[i]['item']))+" inválido. Processo abortado."
+					oResponse['code'] := 1
+					oResponse['message'] := "Error: Failure to save request order in Protheus!"
+					oResponse['status'] := 500
+					oResponse['detailedMessage'] := cLogError
+					_lOk := .F.
+
+					SetRestFault( oResponse['code'],;
+								oResponse['message'],;
+								.T.,;
+								oResponse['status'],;
+								oResponse['detailedMessage'])
+
+					// SetRestFault(400,"Error: " + oResponse['detailedMessage'])
+					Return(_lOk)
 				EndIf
 			Next i
 
@@ -201,7 +235,7 @@ WSMETHOD PUT WSRECEIVE Null WSSERVICE MercadoEletronico
 		aReturn := saveRequest(aHeader, aItems, iIf(!oHeader['isCanceled'], 4, 5))
 
 		If(aReturn[1])
-			cLogSuccess += aReturn[2]+chr(13)+chr(10)
+			cLogSuccess += aReturn[2]
 			oResponse['code'] := 200
 			oResponse['message'] := "Request order saved successfully in Protheus!"
 			oResponse['status'] := 200
@@ -209,7 +243,7 @@ WSMETHOD PUT WSRECEIVE Null WSSERVICE MercadoEletronico
 			_lOk := .T.
 			::SetResponse( oResponse )
 		Else 
-			cLogError += aReturn[2]+chr(13)+chr(10)
+			cLogError += aReturn[2]
 			oResponse['code'] := 1
 			oResponse['message'] := "Error: Failure to save request order in Protheus!"
 			oResponse['status'] := 500
@@ -239,20 +273,23 @@ Static Function setHeader(objH, aHeader, cNum)
 Return
 
 Static Function setItems(objItem, aItems)
-	Local aItem := {}
-	aAdd(aItem, {"C1_ITEM"   , strZero(objItem['item'],2), Nil})
-	aAdd(aItem, {"C1_PRODUTO", Alltrim(objItem['clientProductId']), Nil})
-	aAdd(aItem, {"C1_QUANT"  , objItem['quantity'], Nil})
-	aAdd(aItem, {"C1_DATPRF" , dDatabase, Nil})
-	aAdd(aItem, {"C1_LOCAL"  , "01"     , Nil})
-	aAdd(aItem, {"AUTVLDCONT", "N"      , Nil})
-	if SC1->( FieldPos("C1_XIDME")) > 0
-	   aAdd(aItem, {"C1_XIDME", cValTochar(objItem['requestId']), Nil})
-	endif 
-	aAdd(aItems, aItem)
+Local aItemSC1 := {}
 
-	aSize(aItem,0)
-	aItem := Nil
+	aAdd(aItemSC1, {"C1_ITEM"   , strZero(objItem['item'],2), Nil})
+	aAdd(aItemSC1, {"C1_PRODUTO", Alltrim(objItem['clientProductId']), Nil})
+	aAdd(aItemSC1, {"C1_QUANT"  , objItem['quantity'], Nil})
+	aAdd(aItemSC1, {"C1_DATPRF" , dDatabase, Nil})
+	aAdd(aItemSC1, {"C1_LOCAL"  , "01"     , Nil})
+	aAdd(aItemSC1, {"AUTVLDCONT", "N"      , Nil})
+	
+	If SC1->( FieldPos("C1_XIDME")) > 0
+	   aAdd(aItemSC1, {"C1_XIDME", cValTochar(objItem['requestId']), Nil})
+	Endif 
+
+	aAdd(aItems, aClone(aItemSC1))
+
+	aSize(aItemSC1,0)
+	aItemSC1 := Nil
 
 Return
 
@@ -366,7 +403,7 @@ Return (aRet)
 // 			aReturn := saveRequest(aHeader, aItems)
 
 // 			If(aReturn[1])
-// 				cLogSuccess += aReturn[2]+chr(13)+chr(10)
+// 				cLogSuccess += aReturn[2]
 // 			Else 
 // 				cLogError += aReturn[2]+chr(13)+chr(10)
 // 			EndIf

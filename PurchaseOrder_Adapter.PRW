@@ -22,7 +22,7 @@ CLASS PurchaseOrderAdapter FROM FWAdapterBaseV2
 	METHOD getFields()
 	METHOD GetFItems()
 	METHOD GetQuery()
-
+    
 	PROTECTED METHOD ValueToJSON(cField, xValue)
     PROTECTED METHOD RowToJSON(cAlias, aFields, lEmpty)
     PROTECTED METHOD GetJsonDocItems(cPurchaseOrder)

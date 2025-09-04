@@ -26,6 +26,10 @@ Class PedidosDeCompra FROM LongClassName
     Method getPurchaseOrders()
     Method postPurchaseOrder(nOperation)
     Method StrFilter(cFilterString)
+    Method ExistPurchaseOrder(cPurchaseOrderId)
+    Method GetRequestById(requestId)
+    Method PreValid(aDados,aItems,oResponse,nOperation)
+    Method GetIdMePurchaseOrder(aDados)
     Method Destroy()
 
 EndClass
@@ -178,7 +182,6 @@ Method postPurchaseOrder(nOperation) Class PedidosDeCompra
     Local cAtributo
     Local cBranchId     := ""
     Local cDocumentId   := ""
-    Local nPosXIdMe
 
     Private lMSErroAuto := .F.
     Private lMSHelpAuto := .T.
@@ -310,7 +313,7 @@ Method postPurchaseOrder(nOperation) Class PedidosDeCompra
 									If Left(cCampo,3)=="C7_"
                                         // Obtem o número da solciitação através do RequestId
 										If lower(cAtributo) == "purchaserequestid"
-                                            xValue := getRequestById(xValue)
+                                            xValue := ::getRequestById(xValue)
                                         Else
                                             // Faz as conversões ou completa com espaços
                                             If FwGetSx3Cache(cCampo,"X3_TIPO") == "D"
@@ -419,7 +422,10 @@ Method postPurchaseOrder(nOperation) Class PedidosDeCompra
                     VarInfo("SC7->C7_NUM", SC7->C7_NUM)
                     Conout("---------------------------------------------------------")
                 Else
-                    // aDados := PrepDados(aDados,aItems) 
+                    lRet := ::PreValid(aDados,aItems,@oResponse,nOperation)
+                    If !lRet
+                        Break
+                    EndIf
                 EndIf
          
 				MsExecAuto( { | a, b, c, d, e | MATA120( a, b, c, d, e ) }, 1, aDados, aItems,  nOperation)
@@ -443,11 +449,11 @@ Method postPurchaseOrder(nOperation) Class PedidosDeCompra
                     Conout("---------------------------------------------------------")
                     VarInfo("EXECAUTO_SUCESSO", "")
                     Conout("---------------------------------------------------------") 
-                    If SC7->(FieldPos("C7_XIDME")) > 0 
-                        nPosXIdMe := Ascan(aDados, {|e| Upper(e[FIELD_NAME]) == "C7_XIDME"})
-                        If nPosXIdMe > 0
+                    
+                    If nOperation == OPERATION_INSERT
+                        If SC7->(FieldPos("C7_XIDME")) > 0 
                             RecLock("SC7", .F.)
-                                SC7->C7_XIDME := aDados[nPosXIdMe,FIELD_CONTENT]
+                                SC7->C7_XIDME := ::GetIdMePurchaseOrder(aDados)
                             SC7->(MsUnLock())
                         EndIf
                     EndIf
@@ -613,7 +619,53 @@ Conout("---------------------------------------------------------")
 
 Return aRet
 
-Static Function getRequestById(requestId)
+/*/{Protheus.doc} ExistPurchaseOrder
+Verifica se ja existe um pedido de compra para o ID informado
+@type function
+@version 1.0  
+@author Claudio Donizete
+@since       03/09/2025
+@param cPurchaseOrderId, character, IDME do pedido de compra
+@return logical, .T. se existir, .F. caso contrario
+*/
+Method ExistPurchaseOrder(cPurchaseOrderId) Class PedidosDeCompra
+Local cTemp := getNextAlias()
+Local lRet  := .F.
+
+        VarInfo("Antes da Query", cPurchaseOrderId)
+        cPurchaseOrderId := cvaltochar(cPurchaseOrderId)
+
+        BeginSql Alias cTemp
+            SELECT SC7.C7_NUM
+            FROM %table:SC7% SC7
+            WHERE C7_FILIAL = %xFilial:SC7%
+            AND C7_XIDME = %exp:cPurchaseOrderId%
+            AND SC7.%notdel%
+        EndSql
+
+        VarInfo("GetLastQuery()", GetLastQuery()[2])
+
+        If !(cTemp)->(Eof())
+			cPurchaseOrderId := (cTemp)->C7_NUM
+            VarInfo("cPurchaseOrderId =>", cPurchaseOrderId)
+            lRet := .T.
+		Else
+			cPurchaseOrderId := ""
+            VarInfo("cPurchaseOrderId =>", cPurchaseOrderId)
+        EndIf
+
+        (cTemp)->( dbCloseArea() )
+
+Return lRet
+/*/{Protheus.doc} getRequestById
+Obtém o número da solicitação de compra (C1_NUM) a partir do IDME (C1_XIDME)
+@type function
+@version 1.0  
+@author Claudio Donizete
+@since       03/09/2025
+@param requestId, character, IDME da solicitação de compra
+*/
+Method getRequestById(requestId) Class PedidosDeCompra
 	Local cNum := cvaltochar(requestId)
 	Local cTemp := getNextAlias()
 
@@ -633,3 +685,52 @@ Static Function getRequestById(requestId)
         (cTemp)->( dbCloseArea() )
 
 Return(cNum)
+/*/{Protheus.doc} PreValid
+PreValida se o pedido de compra ja existe
+@type function
+@version 1.0  
+@author Claudio Donizete
+@since       03/09/2025
+@param aDados, array, Array com os dados do pedido de compra
+@param aItems, array, Array com os itens do pedido de compra   
+@param oResponse, object, Objeto de resposta da API
+@param nOperation, numeric, Operação (3-Inserir, 5-Reverter)
+*/
+Method PreValid(aDados,aItems,oResponse,nOperation) Class PedidosDeCompra
+Local cPOIdMe := ::GetIdMePurchaseOrder(aDados)   
+Local lRet := .T.
+Local cPONumberErp := cPOIdMe
+
+    VarInfo("cPOIdMe", cPOIdMe)
+    
+    If ::ExistPurchaseOrder(@cPONumberErp)
+        VarInfo("cPONumberErp", cPONumberErp)
+        lRet := .F.
+        oResponse['code'] := 7 
+        oResponse['status'] := 400
+        oResponse['message'] := If(nOperation==OPERATION_REVERT,"REVERT","")+" failed"
+        oResponse['detailedMessage'] := "Purchase Order already exists, purchaseordernumber -> " + cPONumberErp
+    EndIf
+
+Return lRet
+/*/{Protheus.doc} GetIdMePurchaseOrder
+Obtém o IDME do pedido de compra (C7_XIDME) a partir dos dados enviados no body
+@type function
+@version 1.0  
+@author Claudio Donizete
+@since       03/09/2025
+@param aDados, array, Array com os dados do pedido de compra
+@return character, IDME do pedido de compra
+*/
+Method GetIdMePurchaseOrder(aDados) Class PedidosDeCompra
+Local cRet := ""
+Local nPosXIdMe
+
+    If SC7->(FieldPos("C7_XIDME")) > 0 
+        nPosXIdMe := Ascan(aDados, {|e| Upper(e[FIELD_NAME]) == "C7_XIDME"})
+        If nPosXIdMe > 0
+            cRet := aDados[nPosXIdMe,FIELD_CONTENT]
+        EndIf
+    EndIf
+
+Return cRet    
